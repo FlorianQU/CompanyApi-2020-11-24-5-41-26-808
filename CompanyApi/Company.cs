@@ -60,6 +60,11 @@ namespace CompanyApi
             return employees.Select(employee => employee).ToList();
         }
 
+        public Employee GetEmployeeById(string employeeId)
+        {
+            return employees.FirstOrDefault(employee => employee.EmployeeID == employeeId);
+        }
+
         protected bool Equals(Company otherCompany)
         {
             return otherCompany.CompanyID == this.CompanyID && otherCompany.Name == Name;

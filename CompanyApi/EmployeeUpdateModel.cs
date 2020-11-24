@@ -7,7 +7,17 @@ namespace CompanyApi
 {
     public class EmployeeUpdateModel
     {
+        public EmployeeUpdateModel()
+        {
+        }
+
+        public EmployeeUpdateModel(string name, long salary)
+        {
+            Name = name;
+            Salary = salary;
+        }
+
         public string Name { get; set; }
-        public long Price { get; set; }
+        public long Salary { get; set; }
     }
 }
