@@ -27,6 +27,7 @@ namespace CompanyApi
         public void Clear()
         {
             companies.Clear();
+            generateID = 0;
         }
 
         public List<Company> GetAllCompanies()
