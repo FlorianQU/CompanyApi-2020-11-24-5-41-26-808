@@ -27,17 +27,15 @@ namespace CompanyApiTest
             Company company = new Company("company_name_1");
             string request = JsonConvert.SerializeObject(company);
             StringContent requestBody = new StringContent(request, Encoding.UTF8, "application/json");
-            CompanyList companyList = new CompanyList();
 
             // when
-            await client.PostAsync("company/addCompany", requestBody);
+            await client.PostAsync("company/companies", requestBody);
             var response = await client.GetAsync("company/companies");
 
             // then
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
             List<Company> actualCompanies = JsonConvert.DeserializeObject<List<Company>>(responseString);
-            companyList.AddCompany(company);
             List<Company> companies = new List<Company>()
             {
                 new Company("company_1", "company_name_1"),
@@ -54,11 +52,11 @@ namespace CompanyApiTest
 
             string request = JsonConvert.SerializeObject(company_1);
             StringContent requestBody = new StringContent(request, Encoding.UTF8, "application/json");
-            await client.PostAsync("company/addCompany", requestBody);
+            await client.PostAsync("company/companies", requestBody);
 
             request = JsonConvert.SerializeObject(company_2);
             requestBody = new StringContent(request, Encoding.UTF8, "application/json");
-            await client.PostAsync("company/addCompany", requestBody);
+            await client.PostAsync("company/companies", requestBody);
 
             CompanyList companyList = new CompanyList();
             companyList.AddCompany(company_1);
@@ -88,7 +86,7 @@ namespace CompanyApiTest
             StringContent requestBody = new StringContent(request, Encoding.UTF8, "application/json");
 
             // when
-            await client.PostAsync("company/addCompany", requestBody);
+            await client.PostAsync("company/companies", requestBody);
             string companyID = "company_1";
             var response = await client.GetAsync($"company/companies/{companyID}");
 
@@ -109,7 +107,7 @@ namespace CompanyApiTest
                 Company company = new Company($"company_name_{i}");
                 string request = JsonConvert.SerializeObject(company);
                 StringContent requestBody = new StringContent(request, Encoding.UTF8, "application/json");
-                await client.PostAsync("company/addCompany", requestBody);
+                await client.PostAsync("company/companies", requestBody);
             }
 
             // when
@@ -140,7 +138,7 @@ namespace CompanyApiTest
             StringContent requestBody = new StringContent(request, Encoding.UTF8, "application/json");
 
             // when
-            await client.PostAsync("company/addCompany", requestBody);
+            await client.PostAsync("company/companies", requestBody);
             string companyID = "company_1";
             string newName = "Changed_Name";
             CompanyUpdateModel updateModel = new CompanyUpdateModel(newName);
@@ -159,6 +157,31 @@ namespace CompanyApiTest
             var queryResponseString = await queryResponse.Content.ReadAsStringAsync();
             Company queriedCompany = JsonConvert.DeserializeObject<Company>(queryResponseString);
             Assert.Equal(expectedCompany, queriedCompany);
+        }
+
+        [Fact]
+        public async void Should_Add_New_Employee()
+        {
+            // given
+            Company company = new Company("company_name_1");
+            string request = JsonConvert.SerializeObject(company);
+            StringContent requestBody = new StringContent(request, Encoding.UTF8, "application/json");
+            CompanyList companyList = new CompanyList();
+            Employee employee = new Employee("Tom", 5000);
+            string employeeRequest = JsonConvert.SerializeObject(employee);
+            StringContent employeeRequestBody = new StringContent(employeeRequest, Encoding.UTF8, "application/json");
+
+            // when
+            await client.PostAsync("company/companies", requestBody);
+            string companyId = "company_1";
+            var response = await client.PostAsync($"company/companies/{companyId}/employees", employeeRequestBody);
+
+            // then
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync();
+            Employee actualEmployee = JsonConvert.DeserializeObject<Employee>(responseString);
+            company.AddEmployee(employee);
+            Assert.Equal(employee, actualEmployee);
         }
     }
 }

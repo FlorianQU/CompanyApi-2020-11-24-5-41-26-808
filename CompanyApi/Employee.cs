@@ -7,6 +7,10 @@ namespace CompanyApi
 {
     public class Employee
     {
+        public Employee()
+        {
+        }
+
         public Employee(string name, long salary)
         {
             Name = name;

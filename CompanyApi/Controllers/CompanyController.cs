@@ -18,7 +18,7 @@ namespace CompanyApi.Controllers
             companies.Clear();
         }
 
-        [HttpPost("addCompany")]
+        [HttpPost("companies")]
         public Company AddCompany(Company company)
         {
             if (!companies.ContainsCompany(company))
@@ -53,6 +53,14 @@ namespace CompanyApi.Controllers
             var company = companies.GetCompanyByID(companyId);
             company.Name = updateModel.Name;
             return company;
+        }
+
+        [HttpPost("companies/{companyId}/employees")]
+        public Employee AddEmployee(string companyId, Employee employee)
+        {
+            Company company = companies.GetCompanyByID(companyId);
+            company.AddEmployee(employee);
+            return employee;
         }
     }
 }
