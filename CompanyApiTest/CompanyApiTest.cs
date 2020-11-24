@@ -71,5 +71,28 @@ namespace CompanyApiTest
             List<Company> companies = companyList.GetAllCompanies();
             Assert.Equal(companies, actualCompanies);
         }
+
+        [Fact]
+        public async void Should_Get_Existing_Company()
+        {
+            // given
+            Company company = new Company("company_1");
+            string request = JsonConvert.SerializeObject(company);
+            StringContent requestBody = new StringContent(request, Encoding.UTF8, "application/json");
+            CompanyList companyList = new CompanyList();
+            companyList.AddCompany(company);
+
+            // when
+            await client.PostAsync("company/addCompany", requestBody);
+            string companyID = "company_1";
+            var response = await client.GetAsync($"company/companies/{companyID}");
+
+            // then
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync();
+            Company actualCompany = JsonConvert.DeserializeObject<Company>(responseString);
+            Company companyQueried = companyList.GetCompanyByID(companyID);
+            Assert.Equal(companyQueried, actualCompany);
+        }
     }
 }

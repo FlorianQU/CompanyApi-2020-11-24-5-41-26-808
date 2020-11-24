@@ -34,5 +34,11 @@ namespace CompanyApi.Controllers
         {
             return companies.GetAllCompanies();
         }
+
+        [HttpGet("companies/{companyID}")]
+        public Company GetCompany(string companyID)
+        {
+            return companies.GetCompanyByID(companyID);
+        }
     }
 }

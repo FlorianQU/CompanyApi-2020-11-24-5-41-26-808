@@ -34,6 +34,11 @@ namespace CompanyApi
         {
             return companies.Select(company => company).ToList();
         }
+        
+        public Company GetCompanyByID(string companyID)
+        {
+            return companies.FirstOrDefault(company => company.CompanyID == companyID);
+        }
 
         private string GenerateCompanyId()
         {
