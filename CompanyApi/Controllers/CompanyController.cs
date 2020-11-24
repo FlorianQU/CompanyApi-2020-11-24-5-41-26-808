@@ -62,5 +62,12 @@ namespace CompanyApi.Controllers
             company.AddEmployee(employee);
             return employee;
         }
+
+        [HttpGet("companies/{companyId}/employees")]
+        public List<Employee> GetEmployees(string companyId)
+        {
+            Company company = companies.GetCompanyByID(companyId);
+            return company.GetAllEmployees();
+        }
     }
 }

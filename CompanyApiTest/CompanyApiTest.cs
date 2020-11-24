@@ -183,5 +183,37 @@ namespace CompanyApiTest
             company.AddEmployee(employee);
             Assert.Equal(employee, actualEmployee);
         }
+
+        [Fact]
+        public async void Should_Get_All_Employees()
+        {
+            // given
+            Company company = new Company("company_name_1");
+            string request = JsonConvert.SerializeObject(company);
+            StringContent requestBody = new StringContent(request, Encoding.UTF8, "application/json");
+
+            Employee employee_1 = new Employee("Tom", 5000);
+            string employeeRequest_1 = JsonConvert.SerializeObject(employee_1);
+            StringContent employeeRequestBody_1 = new StringContent(employeeRequest_1, Encoding.UTF8, "application/json");
+            Employee employee_2 = new Employee("Jerry", 3000);
+            string employeeRequest_2 = JsonConvert.SerializeObject(employee_2);
+            StringContent employeeRequestBody_2 = new StringContent(employeeRequest_2, Encoding.UTF8, "application/json");
+
+            // when
+            await client.PostAsync("company/companies", requestBody);
+            string companyId = "company_1";
+            await client.PostAsync($"company/companies/{companyId}/employees", employeeRequestBody_1);
+            await client.PostAsync($"company/companies/{companyId}/employees", employeeRequestBody_2);
+            var response = await client.GetAsync($"company/companies/{companyId}/employees");
+
+            // then
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync();
+            List<Employee> actualEmployees = JsonConvert.DeserializeObject<List<Employee>>(responseString);
+            employee_1.EmployeeID = "employee_1";
+            employee_2.EmployeeID = "employee_2";
+            var expectedEmployees = new List<Employee>() { employee_1, employee_2 };
+            Assert.Equal(expectedEmployees, actualEmployees);
+        }
     }
 }

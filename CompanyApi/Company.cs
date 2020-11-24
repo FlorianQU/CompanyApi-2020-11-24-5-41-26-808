@@ -32,6 +32,7 @@ namespace CompanyApi
         {
             generateEmployeeID += 1;
             employee.EmployeeID = $"employee_{generateEmployeeID}";
+            employees.Add(employee);
         }
 
         public override bool Equals(object obj)
@@ -52,6 +53,11 @@ namespace CompanyApi
             }
 
             return Equals((Company)obj);
+        }
+
+        public List<Employee> GetAllEmployees()
+        {
+            return employees.Select(employee => employee).ToList();
         }
 
         protected bool Equals(Company otherCompany)
