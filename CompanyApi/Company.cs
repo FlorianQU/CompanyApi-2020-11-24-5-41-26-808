@@ -65,6 +65,20 @@ namespace CompanyApi
             return employees.FirstOrDefault(employee => employee.EmployeeID == employeeId);
         }
 
+        public void DeleteEmployeeById(string employeeId)
+        {
+            var employee = employees.FirstOrDefault(employee => employee.EmployeeID == employeeId);
+            if (employee != null)
+            {
+                employees.Remove(employee);
+            }
+        }
+
+        public void DeleteEmployees()
+        {
+            employees.Clear();
+        }
+
         protected bool Equals(Company otherCompany)
         {
             return otherCompany.CompanyID == this.CompanyID && otherCompany.Name == Name;

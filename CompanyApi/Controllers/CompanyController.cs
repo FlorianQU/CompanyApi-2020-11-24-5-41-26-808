@@ -86,5 +86,25 @@ namespace CompanyApi.Controllers
             employee.Salary = employeeUpdateModel.Salary;
             return employee;
         }
+
+        [HttpDelete("companies/{companyId}/employees/{employeeId}")]
+        public void DeleteEmployee(string companyId, string employeeId)
+        {
+            var company = companies.GetCompanyByID(companyId);
+            company.DeleteEmployeeById(employeeId);
+        }
+
+        [HttpDelete("companies/{companyId}/employees")]
+        public void DeleteEmployees(string companyId)
+        {
+            var company = companies.GetCompanyByID(companyId);
+            company.DeleteEmployees();
+        }
+
+        [HttpDelete("companies/{companyId}")]
+        public void DeleteCompany(string companyId)
+        {
+            companies.DeleteCompanyById(companyId);
+        }
     }
 }

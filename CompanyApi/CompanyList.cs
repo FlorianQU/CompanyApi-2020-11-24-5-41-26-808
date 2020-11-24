@@ -49,6 +49,15 @@ namespace CompanyApi
             }).ToList();
         }
 
+        public void DeleteCompanyById(string companyId)
+        {
+            var company = companies.FirstOrDefault(company => company.CompanyID == companyId);
+            if (company != null)
+            {
+                companies.Remove(company);
+            }
+        }
+
         private string GenerateCompanyId()
         {
             generateID += 1;

@@ -251,5 +251,85 @@ namespace CompanyApiTest
             employee_2.Salary = 10000;
             Assert.Equal(employee_2, actualEmployee);
         }
+
+        [Fact]
+        public async void Should_Delete_Employee_By_Id()
+        {
+            // given
+            Company company = new Company("company_name_1");
+            string request = JsonConvert.SerializeObject(company);
+            StringContent requestBody = new StringContent(request, Encoding.UTF8, "application/json");
+
+            Employee employee_1 = new Employee("Tom", 5000);
+            string employeeRequest_1 = JsonConvert.SerializeObject(employee_1);
+            StringContent employeeRequestBody_1 = new StringContent(employeeRequest_1, Encoding.UTF8, "application/json");
+            Employee employee_2 = new Employee("Jerry", 3000);
+            string employeeRequest_2 = JsonConvert.SerializeObject(employee_2);
+            StringContent employeeRequestBody_2 = new StringContent(employeeRequest_2, Encoding.UTF8, "application/json");
+
+            // when
+            await client.PostAsync("company/companies", requestBody);
+            string companyId = "company_1";
+            string employeeId = "employee_2";
+            EmployeeUpdateModel updateModel = new EmployeeUpdateModel("Fred", 10000);
+            string updateRequest = JsonConvert.SerializeObject(updateModel);
+            StringContent updateRequestBody = new StringContent(updateRequest, Encoding.UTF8, "application/json");
+            await client.PostAsync($"company/companies/{companyId}/employees", employeeRequestBody_1);
+            await client.PostAsync($"company/companies/{companyId}/employees", employeeRequestBody_2);
+            await client.DeleteAsync($"company/companies/{companyId}/employees/{employeeId}");
+            var response = await client.GetAsync($"company/companies/{companyId}/employees");
+
+            // then
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync();
+            List<Employee> actualEmployees = JsonConvert.DeserializeObject<List<Employee>>(responseString);
+            employee_1.EmployeeID = "employee_1";
+            employee_2.EmployeeID = "employee_2";
+            List<Employee> expectedEmployees = new List<Employee>() { employee_1, };
+            Assert.Equal(expectedEmployees, actualEmployees);
+        }
+
+        [Fact]
+        public async void Should_Delete_Employees_Before_Deleting_Company()
+        {
+            // given
+            Company company = new Company("company_name_1");
+            string request = JsonConvert.SerializeObject(company);
+            StringContent requestBody = new StringContent(request, Encoding.UTF8, "application/json");
+
+            Employee employee_1 = new Employee("Tom", 5000);
+            string employeeRequest_1 = JsonConvert.SerializeObject(employee_1);
+            StringContent employeeRequestBody_1 = new StringContent(employeeRequest_1, Encoding.UTF8, "application/json");
+            Employee employee_2 = new Employee("Jerry", 3000);
+            string employeeRequest_2 = JsonConvert.SerializeObject(employee_2);
+            StringContent employeeRequestBody_2 = new StringContent(employeeRequest_2, Encoding.UTF8, "application/json");
+
+            // when
+            await client.PostAsync("company/companies", requestBody);
+            string companyId = "company_1";
+            string employeeId = "employee_2";
+            EmployeeUpdateModel updateModel = new EmployeeUpdateModel("Fred", 10000);
+            string updateRequest = JsonConvert.SerializeObject(updateModel);
+            StringContent updateRequestBody = new StringContent(updateRequest, Encoding.UTF8, "application/json");
+            await client.PostAsync($"company/companies/{companyId}/employees", employeeRequestBody_1);
+            await client.PostAsync($"company/companies/{companyId}/employees", employeeRequestBody_2);
+            await client.DeleteAsync($"company/companies/{companyId}/employees");
+            var response = await client.GetAsync($"company/companies/{companyId}/employees");
+
+            // then
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync();
+            List<Employee> actualEmployees = JsonConvert.DeserializeObject<List<Employee>>(responseString);
+            List<Employee> expectedEmployees = new List<Employee>();
+            Assert.Equal(expectedEmployees, actualEmployees);
+
+            await client.DeleteAsync($"company/companies/{companyId}");
+            response = await client.GetAsync($"company/companies");
+            response.EnsureSuccessStatusCode();
+            responseString = await response.Content.ReadAsStringAsync();
+            List<Company> actualCompanies = JsonConvert.DeserializeObject<List<Company>>(responseString);
+            List<Company> expectedCompanies = new List<Company>();
+            Assert.Equal(expectedCompanies, actualCompanies);
+        }
     }
 }
