@@ -1,0 +1,98 @@
+AC1
+POST /companies
+Request Body: {"companyID": "", "name": ""}
+201
+Response Body: {"companyID": "", "name": ""}
+LOCATION: /companies/{companyID}
+409
+
+AC2
+GET /companies
+200
+Response Body: [{"companyID": "", "name": ""}, ...]
+
+AC3
+GET /companies/{companyID}
+200
+Response Body: {{"companyID": companyID, "name": ""}}
+400
+
+AC4
+GET /companies/{pageSize}&{pageIndex}
+200
+Response Body: [{"companyID": "", "name": ""}, ...]
+400
+
+AC5
+//First
+GET /companies/{companyID}
+201
+Response Body: {"companyID": "", "name": ""}
+400
+
+//Then
+PUT /companies/{companyID}
+Request Body: {"name": ""}
+200
+Respons Body: {"companyID": "", "name": ""}
+400
+
+AC6
+GET /companies/{companyID}
+200
+Response Body: {"companyID": "", "name": "", "employees": ""}
+400
+POST /companies/{companyID}/employees
+Request Body: { "name": "", "salary": ""}
+201
+Response Body: {"employeeID": "", "name": "", "salary": ""}
+LOCATION: /companies/{companyID}/employees/{employeeID}
+409
+
+
+AC7
+GET /companies/{companyID}/empolyees
+200
+Response Body: [{"employeeID": "", "name": "", "salary": ""}, ...]
+
+
+AC8
+//First
+GET /companies/{companyID}
+200
+Response Body {"companyID": companyID, "name": ""}
+400
+
+//Then
+GET /companies/{companyID}/employees/{employeeID}
+200
+Response Body {"employeeID": employeeID, "name": "", "salary": ""}
+
+//Last
+PATCH /companies/{companyID}/employees/{employeeID}
+Request Body {"name": "", "salary": ""}
+200
+
+AC9
+//First
+GET /companies/{companyID}
+200
+Response Body {"companyID": companyID, "name": ""}
+400
+
+//Then
+DELETE /companies/{companyID}/employees/{employeeID}
+204
+
+404
+
+AC10
+GET /companies/{companyID}
+200
+Response Body: {"companyID": "", "name": "", "employees": ""}
+
+DELETE /companies/{companyID}/employees
+204
+
+DELETE /companies/{companyID}
+204
