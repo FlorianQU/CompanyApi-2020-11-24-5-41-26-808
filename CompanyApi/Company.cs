@@ -19,6 +19,12 @@ namespace CompanyApi
             Name = name;
         }
 
+        public Company(string companyId, string name)
+        {
+            CompanyID = companyId;
+            Name = name;
+        }
+
         public string CompanyID { get; set; }
         public string Name { get; set; }
 

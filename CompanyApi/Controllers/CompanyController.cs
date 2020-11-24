@@ -46,5 +46,13 @@ namespace CompanyApi.Controllers
         {
             return companies.GetCompanyByPage(pageSize, pageIndex);
         }
+
+        [HttpPatch("companies/{companyId}")]
+        public Company UpdateCompany(string companyId, CompanyUpdateModel updateModel)
+        {
+            var company = companies.GetCompanyByID(companyId);
+            company.Name = updateModel.Name;
+            return company;
+        }
     }
 }

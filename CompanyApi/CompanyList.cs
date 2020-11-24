@@ -49,6 +49,11 @@ namespace CompanyApi
             }).ToList();
         }
 
+        //public void UpdateCompanyName()
+        //{
+
+        //}
+
         private string GenerateCompanyId()
         {
             generateID += 1;

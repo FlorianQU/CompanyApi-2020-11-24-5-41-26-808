@@ -24,7 +24,7 @@ namespace CompanyApiTest
         public async void Should_Add_New_Company()
         {
             // given
-            Company company = new Company("company_1");
+            Company company = new Company("company_name_1");
             string request = JsonConvert.SerializeObject(company);
             StringContent requestBody = new StringContent(request, Encoding.UTF8, "application/json");
             CompanyList companyList = new CompanyList();
@@ -38,7 +38,10 @@ namespace CompanyApiTest
             var responseString = await response.Content.ReadAsStringAsync();
             List<Company> actualCompanies = JsonConvert.DeserializeObject<List<Company>>(responseString);
             companyList.AddCompany(company);
-            List<Company> companies = companyList.GetAllCompanies();
+            List<Company> companies = new List<Company>()
+            {
+                new Company("company_1", "company_name_1"),
+            };
             Assert.Equal(companies, actualCompanies);
         }
 
@@ -46,8 +49,8 @@ namespace CompanyApiTest
         public async void Should_Get_All_Companies()
         {
             // given
-            Company company_1 = new Company("company_1");
-            Company company_2 = new Company("company_2");
+            Company company_1 = new Company("company_name_1");
+            Company company_2 = new Company("company_name_2");
 
             string request = JsonConvert.SerializeObject(company_1);
             StringContent requestBody = new StringContent(request, Encoding.UTF8, "application/json");
@@ -68,7 +71,11 @@ namespace CompanyApiTest
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
             List<Company> actualCompanies = JsonConvert.DeserializeObject<List<Company>>(responseString);
-            List<Company> companies = companyList.GetAllCompanies();
+            List<Company> companies = new List<Company>()
+            {
+                new Company("company_1", "company_name_1"),
+                new Company("company_2", "company_name_2"),
+            };
             Assert.Equal(companies, actualCompanies);
         }
 
@@ -76,11 +83,9 @@ namespace CompanyApiTest
         public async void Should_Get_Existing_Company()
         {
             // given
-            Company company = new Company("company_1");
+            Company company = new Company("company_name_1");
             string request = JsonConvert.SerializeObject(company);
             StringContent requestBody = new StringContent(request, Encoding.UTF8, "application/json");
-            CompanyList companyList = new CompanyList();
-            companyList.AddCompany(company);
 
             // when
             await client.PostAsync("company/addCompany", requestBody);
@@ -91,7 +96,7 @@ namespace CompanyApiTest
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
             Company actualCompany = JsonConvert.DeserializeObject<Company>(responseString);
-            Company companyQueried = companyList.GetCompanyByID(companyID);
+            Company companyQueried = new Company("company_1", "company_name_1");
             Assert.Equal(companyQueried, actualCompany);
         }
 
@@ -99,13 +104,11 @@ namespace CompanyApiTest
         public async void Should_Get_Company_In_Page()
         {
             // given
-            CompanyList companyList = new CompanyList();
             for (int i = 1; i < 11; i++)
             {
-                Company company = new Company($"company_{i}");
+                Company company = new Company($"company_name_{i}");
                 string request = JsonConvert.SerializeObject(company);
                 StringContent requestBody = new StringContent(request, Encoding.UTF8, "application/json");
-                companyList.AddCompany(company);
                 await client.PostAsync("company/addCompany", requestBody);
             }
 
@@ -118,8 +121,44 @@ namespace CompanyApiTest
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
             List<Company> actualCompany = JsonConvert.DeserializeObject<List<Company>>(responseString);
-            List<Company> companyQueried = companyList.GetCompanyByPage(pageSize, pageIndex);
+            List<Company> companyQueried = new List<Company>()
+            {
+                new Company("company_5", "company_name_5"),
+                new Company("company_6", "company_name_6"),
+                new Company("company_7", "company_name_7"),
+                new Company("company_8", "company_name_8"),
+            };
             Assert.Equal(companyQueried, actualCompany);
+        }
+
+        [Fact]
+        public async void Should_Get_Updated_Company()
+        {
+            // given
+            Company company = new Company("company_name_1");
+            string request = JsonConvert.SerializeObject(company);
+            StringContent requestBody = new StringContent(request, Encoding.UTF8, "application/json");
+
+            // when
+            await client.PostAsync("company/addCompany", requestBody);
+            string companyID = "company_1";
+            string newName = "Changed_Name";
+            CompanyUpdateModel updateModel = new CompanyUpdateModel(newName);
+            string updateRequest = JsonConvert.SerializeObject(updateModel);
+            StringContent updateRequestBody = new StringContent(updateRequest, Encoding.UTF8, "application/json");
+            var response = await client.PatchAsync($"company/companies/{companyID}", updateRequestBody);
+
+            // then
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync();
+            Company actualCompany = JsonConvert.DeserializeObject<Company>(responseString);
+            Company expectedCompany = new Company(companyID, newName);
+            Assert.Equal(expectedCompany, actualCompany);
+
+            var queryResponse = await client.GetAsync($"company/companies/{companyID}");
+            var queryResponseString = await queryResponse.Content.ReadAsStringAsync();
+            Company queriedCompany = JsonConvert.DeserializeObject<Company>(queryResponseString);
+            Assert.Equal(expectedCompany, queriedCompany);
         }
     }
 }
