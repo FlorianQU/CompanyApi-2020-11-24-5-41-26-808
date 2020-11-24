@@ -8,23 +8,23 @@ using Xunit;
 
 namespace CompanyApiTest.Controllers
 {
-    public class HelloControllerTest
-    {
-        [Fact]
-        public async Task Should_return_hello_world_with_default_request()
-        {
-            // given
-            TestServer server = new TestServer(new WebHostBuilder()
-               .UseStartup<Startup>());
-            HttpClient client = server.CreateClient();
+    //public class HelloControllerTest
+    //{
+    //    [Fact]
+    //    public async Task Should_return_hello_world_with_default_request()
+    //    {
+    //        // given
+    //        TestServer server = new TestServer(new WebHostBuilder()
+    //           .UseStartup<Startup>());
+    //        HttpClient client = server.CreateClient();
 
-            // when
-            var response = await client.GetAsync("/hello");
-            response.EnsureSuccessStatusCode();
-            var responseString = await response.Content.ReadAsStringAsync();
+    //        // when
+    //        var response = await client.GetAsync("/hello");
+    //        response.EnsureSuccessStatusCode();
+    //        var responseString = await response.Content.ReadAsStringAsync();
 
-            // then
-            Assert.Equal("Hello World", responseString);
-        }
-    }
+    //        // then
+    //        Assert.Equal("Hello World", responseString);
+    //    }
+    //}
 }
