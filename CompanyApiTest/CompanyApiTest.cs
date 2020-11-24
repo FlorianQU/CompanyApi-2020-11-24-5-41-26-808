@@ -94,5 +94,32 @@ namespace CompanyApiTest
             Company companyQueried = companyList.GetCompanyByID(companyID);
             Assert.Equal(companyQueried, actualCompany);
         }
+
+        [Fact]
+        public async void Should_Get_Company_In_Page()
+        {
+            // given
+            CompanyList companyList = new CompanyList();
+            for (int i = 1; i < 11; i++)
+            {
+                Company company = new Company($"company_{i}");
+                string request = JsonConvert.SerializeObject(company);
+                StringContent requestBody = new StringContent(request, Encoding.UTF8, "application/json");
+                companyList.AddCompany(company);
+                await client.PostAsync("company/addCompany", requestBody);
+            }
+
+            // when
+            long pageSize = 4;
+            long pageIndex = 2;
+            var response = await client.GetAsync($"company/companies/{pageSize}&{pageIndex}");
+
+            // then
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync();
+            List<Company> actualCompany = JsonConvert.DeserializeObject<List<Company>>(responseString);
+            List<Company> companyQueried = companyList.GetCompanyByPage(pageSize, pageIndex);
+            Assert.Equal(companyQueried, actualCompany);
+        }
     }
 }

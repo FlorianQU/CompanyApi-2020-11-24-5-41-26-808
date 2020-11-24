@@ -34,10 +34,19 @@ namespace CompanyApi
         {
             return companies.Select(company => company).ToList();
         }
-        
+
         public Company GetCompanyByID(string companyID)
         {
             return companies.FirstOrDefault(company => company.CompanyID == companyID);
+        }
+
+        public List<Company> GetCompanyByPage(long pageSize, long pageIndex)
+        {
+            return companies.Where(company =>
+            {
+                var companyIndex = long.Parse(company.CompanyID.Split('_')[1]);
+                return companyIndex > (pageIndex - 1) * pageSize && companyIndex <= pageIndex * pageSize;
+            }).ToList();
         }
 
         private string GenerateCompanyId()
