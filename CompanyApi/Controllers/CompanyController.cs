@@ -42,7 +42,7 @@ namespace CompanyApi.Controllers
         }
 
         [HttpGet("companies/{pageSize}&{pageIndex}")]
-        public List<Company> GetCompanyByPage(long pageSize, long pageIndex)
+        public List<Company> GetCompanyByPage(int pageSize, int pageIndex)
         {
             return companies.GetCompanyByPage(pageSize, pageIndex);
         }

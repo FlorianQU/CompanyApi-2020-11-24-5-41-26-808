@@ -111,8 +111,8 @@ namespace CompanyApiTest
             }
 
             // when
-            long pageSize = 4;
-            long pageIndex = 2;
+            int pageSize = 4;
+            int pageIndex = 2;
             var response = await client.GetAsync($"company/companies/{pageSize}&{pageIndex}");
 
             // then

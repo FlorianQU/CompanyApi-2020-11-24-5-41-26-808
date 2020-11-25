@@ -40,13 +40,14 @@ namespace CompanyApi
             return companies.FirstOrDefault(company => company.CompanyID == companyID);
         }
 
-        public List<Company> GetCompanyByPage(long pageSize, long pageIndex)
+        public List<Company> GetCompanyByPage(int pageSize, int pageIndex)
         {
-            return companies.Where(company =>
-            {
-                var companyIndex = long.Parse(company.CompanyID.Split('_')[1]);
-                return companyIndex > (pageIndex - 1) * pageSize && companyIndex <= pageIndex * pageSize;
-            }).ToList();
+            //return companies.Where(company =>
+            //{
+            //    var companyIndex = long.Parse(company.CompanyID.Split('_')[1]);
+            //    return companyIndex > (pageIndex - 1) * pageSize && companyIndex <= pageIndex * pageSize;
+            //}).ToList();
+            return companies.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToList();
         }
 
         public void DeleteCompanyById(string companyId)
@@ -56,6 +57,11 @@ namespace CompanyApi
             {
                 companies.Remove(company);
             }
+        }
+
+        public long GetIndex(Company company)
+        {
+            return companies.IndexOf(company);
         }
 
         private string GenerateCompanyId()
